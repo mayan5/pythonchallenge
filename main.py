@@ -1,41 +1,49 @@
 import os
 import csv
-csvpath = "Resources_budget_data.csv"
-with open(csvpath, newline='') as csvfile:
-    csvreader = csv.reader(csvfile, delimiter=',')
+#setting up the file path
+polling = os.path.join("election_data.csv")
+
+total_votes = 0.00
+candidates = {}
+
+#this dictionary is going to be {candidate : votes}}
+
+
+winner = ""
+winner_percent = 0
+
+
+with open(polling) as csvfile:
+    csvreader = csv.reader(csvfile, delimiter=",")
+    
+    # Read the header row first (skip this step if there is now header)
     csv_header = next(csvreader)
-    total_months = 0
-    total_revenue = []
-    monthly_profit_change = []
-
-    profit_loss_list = []
-
-    month_list = []
+  
     for row in csvreader:
-        total_months = total_months + 1
-        month_list.append(row[0])
-        profit_loss_list.append(int(row[1]))
-    print(total_months)
-    print(month_list)
-    
-
-    #total_months = len(month_list)
-    net_profit_loss = sum(profit_loss_list)
-
-    
-    print(net_profit_loss)
-
-    average_monthly_change_list = []
-    previous_month_amount = 0
-
-    for x in range(len(profit_loss_list)):
-        if x == 0:
-            previous_month_amount = profit_loss_list[x]
+        total_votes += 1
+        vote = row[2]
+        if vote in candidates:
+            candidates[vote] += 1
         else:
-            monthly_change = profit_loss_list[x] - previous_month_amount
-            average_monthly_change_list.append(monthly_change)
-            previous_month_amount = profit_loss_list[x]
-    print(average_monthly_change_list)
-    print(max(average_monthly_change_list))
-    print(min(average_monthly_change_list))
-    print(sum(average_monthly_change_list)/len(average_monthly_change_list))
+            candidates[vote]= 1
+
+print(f'Election Results')
+print(f'--------------------')
+print(f'Total Votes: {total_votes}')
+print(f'--------------------')
+
+for candidate in candidates:
+    votes = candidates[candidate]
+    percent = votes/total_votes
+
+
+    print(f'{candidate}: {percent:.2%} ({votes})')
+
+
+    if percent > winner_percent:
+        winner = candidate
+        winner_percent = percent
+
+print(f'--------------------')
+print(f'Winner: {winner}')
+print(f'--------------------')
